@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\search_api_solr\Plugin\Derivative;
+namespace Drupal\search_api_elasticsearch\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Core\Entity\EntityManagerInterface;
@@ -54,11 +54,11 @@ class DevelLocalTask extends DeriverBase implements ContainerDeriverInterface {
 
     foreach ($this->entityManager->getDefinitions() as $entity_type_id => $entity_type) {
 
-      if ($entity_type->hasLinkTemplate('devel-solr')) {
-        $this->derivatives["$entity_type_id.devel_solr_tab"] = array(
-          'route_name' => "entity.$entity_type_id.devel_solr",
+      if ($entity_type->hasLinkTemplate('devel-elasticsearch')) {
+        $this->derivatives["$entity_type_id.devel_elasticsearch_tab"] = array(
+          'route_name' => "entity.$entity_type_id.devel_elasticsearch",
           'weight' => 110,
-          'title' => $this->t('Solr'),
+          'title' => $this->t('Elasticsearch'),
           'parent_id' => "devel.entities:$entity_type_id.devel_tab",
         );
       }

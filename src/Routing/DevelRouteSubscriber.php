@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\search_api_solr\Routing;
+namespace Drupal\search_api_elasticsearch\Routing;
 
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
- * Subscriber for Search Api Solr routes.
+ * Subscriber for Search Api Elasticsearch routes.
  */
 class DevelRouteSubscriber extends RouteSubscriberBase {
 
@@ -36,14 +36,14 @@ class DevelRouteSubscriber extends RouteSubscriberBase {
    */
   protected function alterRoutes(RouteCollection $collection) {
     foreach ($this->entityTypeManager->getDefinitions() as $entity_type_id => $entity_type) {
-      if ($route = $this->getDevelSolrRoute($entity_type)) {
-        $collection->add("entity.$entity_type_id.devel_solr", $route);
+      if ($route = $this->getDevelElasticsearchRoute($entity_type)) {
+        $collection->add("entity.$entity_type_id.devel_elasticsearch", $route);
       }
     }
   }
 
   /**
-   * Gets the devel Solr route.
+   * Gets the devel Elasticsearch route.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type.
@@ -51,14 +51,14 @@ class DevelRouteSubscriber extends RouteSubscriberBase {
    * @return \Symfony\Component\Routing\Route|null
    *   The generated route, if available.
    */
-  protected function getDevelSolrRoute(EntityTypeInterface $entity_type) {
-    if ($devel_solr = $entity_type->getLinkTemplate('devel-solr')) {
+  protected function getDevelElasticsearchRoute(EntityTypeInterface $entity_type) {
+    if ($devel_elasticsearch = $entity_type->getLinkTemplate('devel-elasticsearch')) {
       $entity_type_id = $entity_type->id();
-      $route = new Route($devel_solr);
+      $route = new Route($devel_elasticsearch);
       $route
         ->addDefaults([
-          '_controller' => '\Drupal\search_api_solr\Controller\DevelController::entitySolr',
-          '_title' => 'Devel Solr',
+          '_controller' => '\Drupal\search_api_elasticsearch\Controller\DevelController::entityElasticsearch',
+          '_title' => 'Devel Elasticsearch',
         ])
         ->addRequirements([
           '_permission' => 'access devel information',

@@ -1,8 +1,8 @@
 {
-    "name": "drupal/search_api_solr",
-    "description": "Offers an implementation of the Search API that uses an Apache Solr server for indexing content.",
+    "name": "drupal/search_api_elasticsearch",
+    "description": "Offers an implementation of the Search API that uses an Elasticsearch server for indexing content.",
     "type": "drupal-module",
-    "homepage": "https://www.drupal.org/project/search_api_solr",
+    "homepage": "https://www.drupal.org/project/search_api_elasticsearch",
     "license": "GPL-2.0+",
     "authors": [
         {
@@ -10,17 +10,21 @@
             "homepage": "https://www.drupal.org/u/mkalkbrenner"
         },
         {
+            "name": "Lennard Westerveld",
+            "homepage": "https://www.drupal.org/u/lennardwesterveld"
+        },
+        {
             "name": "Other contributors",
             "homepage":"https://www.drupal.org/node/982682/committers"
         }
     ],
     "support": {
-        "issues": "https://www.drupal.org/project/issues/search_api_solr",
+        "issues": "https://www.drupal.org/project/issues/search_api_elasticsearch",
         "irc": "irc://irc.freenode.org/drupal-search-api",
-        "source": "http://git.drupal.org/project/search_api_solr.git"
+        "source": "http://git.drupal.org/project/search_api_elasticsearch.git"
     },
     "require": {
-        "solarium/solarium": "3.8.*",
+        "elasticsearch/elasticsearch": "5.3.*",
         "drupal/search_api": "~1.3"
     },
     "require-dev": {
@@ -30,7 +34,6 @@
         "drupal/search_api_location": "1.x-dev"
     },
     "suggest": {
-        "drupal/facets": "Provides facetted search.",
-        "drupal/search_api_solr_multilingual": "Highly recommended if installation is multilingual or uses a language different than English."
+        "drupal/facets": "Provides facetted search."
     }
 }

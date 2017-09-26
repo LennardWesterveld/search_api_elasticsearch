@@ -8,7 +8,7 @@ use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_autocomplete\Entity\Search;
-use Drupal\search_api_solr\SolrBackendInterface;
+use Drupal\search_api_solr\ElasticsearchBackendInterface;
 use Drupal\Tests\search_api\Kernel\BackendTestBase;
 use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 use Drupal\user\Entity\User;
@@ -333,13 +333,13 @@ class SearchApiSolrTest extends BackendTestBase {
   /**
    * Gets the Drupal Fields and their Solr mapping.
    *
-   * @param \Drupal\search_api_solr\SolrBackendInterface $backend
+   * @param \Drupal\search_api_solr\ElasticsearchBackendInterface $backend
    *   The backend the mapping is used for.
    *
    * @return array
    *   [$fields, $mapping]
    */
-  protected function getFieldsAndMapping(SolrBackendInterface $backend) {
+  protected function getFieldsAndMapping(ElasticsearchBackendInterface $backend) {
     /** @var \Drupal\search_api\IndexInterface $index */
     $index = Index::load($this->indexId);
     $fields = $index->getFields();
@@ -365,7 +365,7 @@ class SearchApiSolrTest extends BackendTestBase {
    * Tests the conversion of Search API queries into Solr queries.
    */
   public function testQueryConditions() {
-    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    /** @var \Drupal\search_api_solr\ElasticsearchBackendInterface $backend */
     $backend = Server::load($this->serverId)->getBackend();
     list($fields, $mapping) = $this->getFieldsAndMapping($backend);
     $options = [];
@@ -518,7 +518,7 @@ class SearchApiSolrTest extends BackendTestBase {
    * Tests the conversion of language aware queries into Solr queries.
    */
   public function testQueryConditionsAndLanguageFilter() {
-    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    /** @var \Drupal\search_api_solr\ElasticsearchBackendInterface $backend */
     $backend = Server::load($this->serverId)->getBackend();
     list($fields, $mapping) = $this->getFieldsAndMapping($backend);
     $options = [];
@@ -606,7 +606,7 @@ class SearchApiSolrTest extends BackendTestBase {
     $config['connector_config']['username'] = 'foo';
     $config['connector_config']['password'] = 'bar';
     $server->setBackendConfig($config);
-    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    /** @var \Drupal\search_api_solr\ElasticsearchBackendInterface $backend */
     $backend = $server->getBackend();
     $auth = $backend->getSolrConnector()->getEndpoint()->getAuthentication();
     $this->assertEquals(['username' => 'foo', 'password' => 'bar'], $auth);
@@ -823,7 +823,7 @@ class SearchApiSolrTest extends BackendTestBase {
 
       $this->indexItems($this->indexId);
 
-      /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
+      /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiElasticsearchBackend $backend */
       $backend = Server::load($this->serverId)->getBackend();
       $autocompleteSearch = new Search([], 'search_api_autocomplete_search');
 
@@ -868,7 +868,7 @@ class SearchApiSolrTest extends BackendTestBase {
    */
   public function testExtract() {
     $filepath = drupal_get_path('module', 'search_api_solr_test') . '/assets/test_extraction.pdf';
-    /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
+    /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiElasticsearchBackend $backend */
     $backend = Server::load($this->serverId)->getBackend();
     $content = $backend->extractContentFromFile($filepath);
     $this->assertContains('The extraction seems working!', $content);

@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\search_api_solr\Unit;
 
-use Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend;
-use Drupal\search_api_solr\SolrConnectorInterface;
+use Drupal\search_api_solr\Plugin\search_api\backend\SearchApiElasticsearchBackend;
+use Drupal\search_api_solr\ElasticsearchConnectorInterface;
 use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 use Drupal\Tests\UnitTestCase;
 use Solarium\Core\Query\Helper;
@@ -38,7 +38,7 @@ class SearchApiBackendUnitTest extends UnitTestCase  {
    *   Expected result.
    */
   public function testIndexField($input, $type, $expected) {
-    $connector = $this->prophesize(SolrConnectorInterface::class);
+    $connector = $this->prophesize(ElasticsearchConnectorInterface::class);
     $connector->getQueryHelper()->willReturn(new Helper());
 
     $field = 'testField';
@@ -47,7 +47,7 @@ class SearchApiBackendUnitTest extends UnitTestCase  {
       ->addField($field, $expected)
       ->shouldBeCalled();
 
-    $backend = $this->prophesize(SearchApiSolrBackend::class);
+    $backend = $this->prophesize(SearchApiElasticsearchBackend::class);
     $backend->getSolrConnector()->willReturn($connector->reveal());
 
     $args = [

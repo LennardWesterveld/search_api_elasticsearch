@@ -7,7 +7,7 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\field\FieldStorageConfigInterface;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\search_api\Entity\Index;
-use Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend;
+use Drupal\search_api_solr\Plugin\search_api\backend\SearchApiElasticsearchBackend;
 use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 
 /**
@@ -87,7 +87,7 @@ class SolrFieldNamesTest extends KernelTestBase {
       ],
     ]);
 
-    $backend = SearchApiSolrBackend::create($this->container, [], 'test', []);
+    $backend = SearchApiElasticsearchBackend::create($this->container, [], 'test', []);
     $fields = $backend->getSolrFieldNames($index);
 
     $this->assertSame($fields['title'], 'sm_title');

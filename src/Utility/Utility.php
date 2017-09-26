@@ -1,29 +1,29 @@
 <?php
 
-namespace Drupal\search_api_solr\Utility;
+namespace Drupal\search_api_elasticsearch\Utility;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\search_api\ServerInterface;
 
 /**
- * Utility functions specific to solr.
+ * Utility functions specific to elasticsearch.
  */
 class Utility {
 
   /**
-   * Retrieves Solr-specific data for available data types.
+   * Retrieves Elasticsearch-specific data for available data types.
    *
    * Returns the data type information for both the default Search API data
    * types and custom data types defined by hook_search_api_data_type_info().
    * Names for default data types are not included, since they are not relevant
-   * to the Solr service class.
+   * to the Elasticsearch service class.
    *
-   * We're adding some extra Solr field information for the default search api
+   * We're adding some extra Elasticsearch field information for the default search api
    * data types (as well as on behalf of a couple contrib field types). The
    * extra information we're adding is documented in
-   * search_api_solr_hook_search_api_data_type_info(). You can use the same
+   * search_api_elasticsearch_hook_search_api_data_type_info(). You can use the same
    * additional keys in hook_search_api_data_type_info() to support custom
-   * dynamic fields in your indexes with Solr.
+   * dynamic fields in your indexes with Elasticsearch.
    *
    * @param string|null $type
    *   (optional) A specific type for which the information should be returned.
@@ -35,7 +35,7 @@ class Utility {
    *   for search_api_get_data_type_info().
    *
    * @see search_api_get_data_type_info()
-   * @see search_api_solr_hook_search_api_data_type_info()
+   * @see search_api_elasticsearch_hook_search_api_data_type_info()
    */
   public static function getDataTypeInfo($type = NULL) {
     $types = &drupal_static(__FUNCTION__);
@@ -113,27 +113,27 @@ class Utility {
   /**
    * Returns a unique hash for the current site.
    *
-   * This is used to identify Solr documents from different sites within a
-   * single Solr server.
+   * This is used to identify Elasticsearch documents from different sites within a
+   * single Elasticsearch server.
    *
    * @return string
    *   A unique site hash, containing only alphanumeric characters.
    */
   public static function getSiteHash() {
-    // Copied from apachesolr_site_hash().
-    if (!($hash = \Drupal::config('search_api_solr.settings')->get('site_hash'))) {
+    // Copied from apacheelasticsearch_site_hash().
+    if (!($hash = \Drupal::config('search_api_elasticsearch.settings')->get('site_hash'))) {
       global $base_url;
       $hash = substr(base_convert(sha1(uniqid($base_url, TRUE)), 16, 36), 0, 6);
-      \Drupal::configFactory()->getEditable('search_api_solr.settings')->set('site_hash', $hash)->save();
+      \Drupal::configFactory()->getEditable('search_api_elasticsearch.settings')->set('site_hash', $hash)->save();
     }
     return $hash;
   }
 
   /**
-   * Retrieves a list of all config files of a server's Solr backend.
+   * Retrieves a list of all config files of a server's Elasticsearch backend.
    *
    * @param \Drupal\search_api\ServerInterface $server
-   *   The Solr server whose files should be retrieved.
+   *   The Elasticsearch server whose files should be retrieved.
    * @param string $dir_name
    *   (optional) The directory that should be searched for files. Defaults to
    *   the root config directory.
@@ -147,9 +147,9 @@ class Utility {
    *   If a problem occurred while retrieving the files.
    */
   public static function getServerFiles(ServerInterface $server, $dir_name = NULL) {
-    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    /** @var \Drupal\search_api_elasticsearch\ElasticsearchBackendInterface $backend */
     $backend = $server->getBackend();
-    $response = $backend->getSolrConnector()->getFile($dir_name);
+    $response = $backend->getElasticsearchConnector()->getFile($dir_name);
 
     // Search for directories and recursively merge directory files.
     $files_data = json_decode($response->getBody(), TRUE);
@@ -158,7 +158,7 @@ class Utility {
     $result = array('' => array());
 
     foreach ($files_list as $file_name => $file_info) {
-      // Annoyingly, Solr 4.7 changed the way the admin/file handler returns
+      // Annoyingly, Elasticsearch 4.7 changed the way the admin/file handler returns
       // the file names when listing directory contents: the returned name is
       // now only the base name, not the complete path from the config root
       // directory. We therefore have to check for this case.
@@ -192,9 +192,9 @@ class Utility {
   }
 
   /**
-   * Encodes field names to avoid characters that are not supported by solr.
+   * Encodes field names to avoid characters that are not supported by elasticsearch.
    *
-   * Solr doesn't restrict the characters used to build field names. But using
+   * Elasticsearch doesn't restrict the characters used to build field names. But using
    * non java identifiers within a field name can cause different kind of
    * trouble when running queries. Java identifiers are only consist of
    * letters, digits, '$' and '_'. See
@@ -202,13 +202,13 @@ class Utility {
    * http://docs.oracle.com/cd/E19798-01/821-1841/bnbuk/index.html
    * For full compatibility the '$' has to be avoided, too. And there're more
    * restrictions regarding the field name itself. See
-   * https://cwiki.apache.org/confluence/display/solr/Defining+Fields
+   * https://cwiki.apache.org/confluence/display/elasticsearch/Defining+Fields
    * "Field names should consist of alphanumeric or underscore characters only
    * and not start with a digit ... Names with both leading and trailing
    * underscores (e.g. _version_) are reserved." Field names starting with
    * digits or underscores are already avoided by our schema. The same is true
    * for the names of field types. See
-   * https://cwiki.apache.org/confluence/display/solr/Field+Type+Definitions+and+Properties
+   * https://cwiki.apache.org/confluence/display/elasticsearch/Field+Type+Definitions+and+Properties
    * "It is strongly recommended that names consist of alphanumeric or
    * underscore characters only and not start with a digit. This is not
    * currently strictly enforced."
@@ -227,7 +227,7 @@ class Utility {
    * @return string
    *   The encoded field name.
    */
-  public static function encodeSolrName($field_name) {
+  public static function encodeElasticsearchName($field_name) {
     return preg_replace_callback('/([^\da-zA-Z_]|_X)/u',
       function ($matches) {
         return '_X' . bin2hex($matches[1]) . '_';
@@ -236,14 +236,14 @@ class Utility {
   }
 
   /**
-   * Decodes solr field names.
+   * Decodes elasticsearch field names.
    *
    * This function therefore decodes all forbidden characters from their
    * hexadecimal equivalent encapsulated by a leading sequence of '_X' and a
    * termination character '_'. Example:
    * "tm_entity_X3a_node_X2f_body" becomes "tm_entity:node/body".
    *
-   * @see encodeSolrDynamicFieldName() for details.
+   * @see encodeElasticsearchDynamicFieldName() for details.
    *
    * @param string $field_name
    *   Encoded field name.
@@ -251,7 +251,7 @@ class Utility {
    * @return string
    *   The decoded field name
    */
-  public static function decodeSolrName($field_name) {
+  public static function decodeElasticsearchName($field_name) {
     return preg_replace_callback('/_X([\dabcdef]+?)_/',
       function ($matches) {
         return hex2bin($matches[1]);

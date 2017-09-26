@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\search_api_solr\Controller;
+namespace Drupal\search_api_elasticsearch\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityInterface;
@@ -95,7 +95,7 @@ class DevelController extends ControllerBase {
   }
 
   /**
-   * Returns all available Solr backend plugins.
+   * Returns all available Elasticsearch backend plugins.
    *
    * @return string[]
    *   An associative array mapping backend plugin IDs to their (HTML-escaped)
@@ -105,7 +105,7 @@ class DevelController extends ControllerBase {
     $backends = array();
     $plugin_definitions = $this->getBackendPluginManager()->getDefinitions();
     foreach ($plugin_definitions as $plugin_id => $plugin_definition) {
-      if (is_a($plugin_definition['class'], $plugin_definitions['search_api_solr']['class'], TRUE)) {
+      if (is_a($plugin_definition['class'], $plugin_definitions['search_api_elasticsearch']['class'], TRUE)) {
         $backends[] = $plugin_id;
       }
     }
@@ -113,7 +113,7 @@ class DevelController extends ControllerBase {
   }
 
   /**
-   * Prints the document structure to be indexed by Solr.
+   * Prints the document structure to be indexed by Elasticsearch.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   A RouteMatch object.
@@ -121,7 +121,7 @@ class DevelController extends ControllerBase {
    * @return array
    *   Array of page elements to render.
    */
-  public function entitySolr(RouteMatchInterface $route_match) {
+  public function entityElasticsearch(RouteMatchInterface $route_match) {
     $output = [];
 
     $parameter_name = $route_match->getRouteObject()->getOption('_devel_entity_type_id');
@@ -132,7 +132,7 @@ class DevelController extends ControllerBase {
         /** @var \Drupal\search_api\ServerInterface[] $servers */
         $servers = $this->getStorage()->loadByProperties(['backend' => $backend]);
         foreach ($servers as $server) {
-          /** @var SolrBackendInterface $backend */
+          /** @var ElasticsearchBackendInterface $backend */
           $backend = $server->getBackend();
           $indexes = $server->getIndexes();
           foreach ($indexes as $index) {
